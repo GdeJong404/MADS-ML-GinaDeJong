@@ -6,7 +6,7 @@ from scipy import stats
 
 
 class Hypotheses:
-    def __init__(self, n: Union[int, List[int]], fixed: bool = False):
+    def __init__(self, n: Union[int, List[int]], fixed: bool = False):                              # note 1 & 2
         """Provide one or more functions that will take in a history,
         and output a prediction
 
@@ -24,7 +24,7 @@ class Hypotheses:
             TypeError: [description]
         """
         # all available hypotheses
-        self._all_h: List[Callable[[List[int]], float]] = [
+        self._all_h: List[Callable[[List[int]], float]] = [                                         # note 3
             self._mirror,
             self._average_4w,
             self._cycle2w,
@@ -35,21 +35,21 @@ class Hypotheses:
             self._lastweek,
         ]
 
-        if not fixed:
+        if not fixed:                                                                               # means: if fixed = False
             # if n is an integer
-            if isinstance(n, int) and n > len(self._all_h):
+            if isinstance(n, int) and n > len(self._all_h):                                         # if n > all_h: pick all hypotheses
                 # pick all available hypotheses
                 logger.info(f"Max value of n is {len(self._all_h)}, found {n}")
                 n = len(self._all_h)
 
-            if isinstance(n, int) and n > 0:
+            if isinstance(n, int) and n > 0:                                                        # if n > 0: pick n random hypotheses
                 # pick n random hypotheses
                 idx = list(
                     np.random.choice(
                         np.arange(0, len(self._all_h)), size=n, replace=False
                     )
                 )  # type: ignore
-            elif isinstance(n, int) and n == 0:
+            elif isinstance(n, int) and n == 0:                                                     # if n == 0: pick the last hypothesis (lastweek)
                 # if 0, pick the last one
                 idx = [-1]
             else:
@@ -59,22 +59,22 @@ class Hypotheses:
         else:
             # if n is a list and fixed=True, the list defines which hypotheses are
             # picked and in what order
-            if isinstance(n, list) and np.max(n) >= len(self._all_h):
+            if isinstance(n, list) and np.max(n) >= len(self._all_h):                               # if the given index n is bigger than the existing list
                 raise ValueError(f"Item in n too big: {np.max(n)}")
-            if isinstance(n, int):
+            if isinstance(n, int):                                                                  # if n is not a list, but only an int
                 raise TypeError(
                     "If fixed is True, n should be a list of integers, found int"
                 )
             idx = n
 
         # models is a list of callable hypotheses
-        self.models: List[Callable[[List[int]], float]] = [self._all_h[i] for i in idx]
+        self.models: List[Callable[[List[int]], float]] = [self._all_h[i] for i in idx] 
         self.n = n
 
     def __len__(self):
-        return len(self.models)
+        return len(self.models)                                                                     # returns the length of List[int]
 
-    def __repr__(self):
+    def __repr__(self):                                                                             # __repr__ returns an unambiguous representation of the object’s state
         names = [x.__name__[1:] for i, x in enumerate(self.models)]
         return f"Hypotheses(models={names})"
 
